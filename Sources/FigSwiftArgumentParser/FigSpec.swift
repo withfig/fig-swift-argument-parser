@@ -84,29 +84,33 @@ struct FigSpec: Encodable {
         case preset(Preset, Overlay?)
         case template(Overlay)
 
+        private func buildFigURL(_ builder: (inout URLComponents) throws -> Void) rethrows -> String? {
+            var components = URLComponents()
+            components.scheme = "fig"
+            try builder(&components)
+            return components.url?.absoluteString
+        }
+
         var rawValue: String? {
             switch self {
             case .character(let c):
                 return "\(c)"
             case let .path(url, overlay):
-                var components = URLComponents()
-                components.scheme = "fig"
-                components.path = url.path
-                overlay?.apply(to: &components)
-                return components.url?.absoluteString
+                return buildFigURL { components in
+                    components.path = url.path
+                    overlay?.apply(to: &components)
+                }
             case let .preset(preset, overlay):
-                var components = URLComponents()
-                components.scheme = "fig"
-                components.path = "icon"
-                components.queryItems = [URLQueryItem(name: "type", value: preset.rawValue)]
-                overlay?.apply(to: &components)
-                return components.url?.absoluteString
+                return buildFigURL { components in
+                    components.path = "icon"
+                    components.queryItems = [URLQueryItem(name: "type", value: preset.rawValue)]
+                    overlay?.apply(to: &components)
+                }
             case let .template(overlay):
-                var components = URLComponents()
-                components.scheme = "fig"
-                components.path = "template"
-                overlay.apply(to: &components)
-                return components.url?.absoluteString
+                return buildFigURL { components in
+                    components.path = "template"
+                    overlay.apply(to: &components)
+                }
             }
         }
 

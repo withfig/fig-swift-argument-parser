@@ -1,4 +1,5 @@
 import Foundation
+import ArgumentParserToolInfo
 
 fileprivate extension Collection {
     var nonEmpty: Self? { isEmpty ? nil : self }
@@ -30,6 +31,7 @@ private extension ArgumentInfoV0.NameInfoV0 {
         case .long:
             return "--\(name)"
         case .longWithSingleDash, .short:
+            // TODO: Set flagsArePosixNoncompliant if we see longWithSingleDash
             return "-\(name)"
         }
     }

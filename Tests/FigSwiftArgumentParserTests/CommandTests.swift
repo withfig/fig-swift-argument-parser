@@ -18,7 +18,7 @@ struct TestCommand: ParsableCommand {
     func run() throws {}
 }
 
-final class CLITests: XCTestCase {
+final class CommandTests: XCTestCase {
 
     func testGeneratePrintsSpec() throws {
         let spec = try TestCommand.dumpFigSpec()

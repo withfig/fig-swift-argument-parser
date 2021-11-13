@@ -1,6 +1,6 @@
 import Foundation
 
-public struct FigJSGenerator {
+public struct FigScriptGenerator {
     static let encoder: JSONEncoder = {
         let encoder = JSONEncoder()
         encoder.outputFormatting = .prettyPrinted
@@ -27,11 +27,11 @@ public struct FigJSGenerator {
 }
 
 extension FigSpec: CustomStringConvertible {
-    public func toJS() throws -> String {
-        try FigJSGenerator().generate(from: self)
+    public func script() throws -> String {
+        try FigScriptGenerator().generate(from: self)
     }
 
     public var description: String {
-        (try? toJS()) ?? "<could not convert FigSpec to JS>"
+        (try? script()) ?? "<could not convert FigSpec to JavaScript>"
     }
 }

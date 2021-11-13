@@ -1,9 +1,9 @@
 import XCTest
 @testable import FigSchema
 
-final class SpecTests: XCTestCase {
+final class ScriptTests: XCTestCase {
 
-    // TODO: Add FigSpec tests
+    // TODO: Add FigScriptGenerator tests
 
     func testStub() throws {
         throw XCTSkip()

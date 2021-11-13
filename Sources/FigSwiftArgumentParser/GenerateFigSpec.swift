@@ -8,6 +8,6 @@ extension ParsableArguments {
     }
 
     public static func dumpFigSpec() throws -> String {
-        try generateFigSpec().toJS()
+        try generateFigSpec().script()
     }
 }

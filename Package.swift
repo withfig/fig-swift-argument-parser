@@ -6,6 +6,10 @@ let package = Package(
     name: "FigSwiftArgumentParser",
     products: [
         .library(
+            name: "FigSchema",
+            targets: ["FigSchema"]
+        ),
+        .library(
             name: "FigSwiftArgumentParser",
             targets: ["FigSwiftArgumentParser"]
         ),
@@ -15,9 +19,24 @@ let package = Package(
     ],
     targets: [
         .target(
+            name: "FigUtils"
+        ),
+        .target(
+            name: "FigSchema",
+            dependencies: ["FigUtils"]
+        ),
+        .target(
             name: "FigSwiftArgumentParser",
             dependencies: [
+                "FigUtils",
+                "FigSchema",
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
+            ]
+        ),
+        .testTarget(
+            name: "FigSchemaTests",
+            dependencies: [
+                "FigSchema",
             ]
         ),
         .testTarget(

@@ -1,4 +1,6 @@
 import Foundation
+import FigUtils
+import FigSchema
 import ArgumentParserToolInfo
 
 fileprivate extension Collection {
@@ -37,45 +39,62 @@ private extension ArgumentInfoV0.NameInfoV0 {
     }
 }
 
-private extension FigSpec {
+extension FigSpec {
     init(toolInfo: ToolInfoV0) throws {
-        root = try .init(commandInfo: toolInfo.command)
+        self.init(
+            root: try .init(commandInfo: toolInfo.command)
+        )
     }
 }
 
-private extension FigSpec.Subcommand {
+extension FigSpec.Subcommand {
     init(commandInfo: CommandInfoV0) throws {
-        names = [commandInfo.commandName]
-        description = commandInfo.abstract
-        subcommands = try commandInfo.subcommands?.map(FigSpec.Subcommand.init(commandInfo:))
-        arguments = try commandInfo.arguments?.filter { $0.kind == .positional }.nonEmpty?.map(FigSpec.Argument.init(argumentInfo:))
-        options = try commandInfo.arguments?.filter { $0.kind != .positional }.nonEmpty?.map(FigSpec.Option.init(argumentInfo:))
+        self.init(
+            names: [commandInfo.commandName],
+            subcommands: try commandInfo.subcommands?
+                .map(FigSpec.Subcommand.init(commandInfo:)),
+            options: try commandInfo.arguments?
+                .filter { $0.kind != .positional }
+                .nonEmpty?
+                .map(FigSpec.Option.init(argumentInfo:)),
+            arguments: try commandInfo.arguments?
+                .filter { $0.kind == .positional }
+                .nonEmpty?
+                .map(FigSpec.Argument.init(argumentInfo:)),
+            description: commandInfo.abstract
+        )
     }
 }
 
-private extension FigSpec.Argument {
+extension FigSpec.Argument {
     init(argumentInfo: ArgumentInfoV0) throws {
-        name = argumentInfo.valueName
-        description = argumentInfo.abstract
-        `default` = argumentInfo.defaultValue
-        isVariadic = argumentInfo.isRepeating ? true : nil
-        isOptional = argumentInfo.isOptional ? true : nil
+        self.init(
+            name: argumentInfo.valueName,
+            description: argumentInfo.abstract,
+            default: argumentInfo.defaultValue,
+            isVariadic: argumentInfo.isRepeating ? true : nil,
+            isOptional: argumentInfo.isOptional ? true : nil
+        )
     }
 }
 
-private extension FigSpec.Option {
+extension FigSpec.Option {
     init(argumentInfo: ArgumentInfoV0) throws {
-        names = (argumentInfo.names ?? []).map(\.formattedName)
+        self.init(
+            names: (argumentInfo.names ?? []).map(\.formattedName),
+            // TODO: ArgumentInfoV0.isOptional doesn't seem to be accurate
+//            isRequired: argumentInfo.isOptional ? nil : true,
+            repeatCount: argumentInfo.isRepeating ? .infinity : nil,
+            description: argumentInfo.discussion,
+            isHidden: argumentInfo.shouldDisplay ? nil : true
+        )
+
         if let preferred = argumentInfo.preferredName {
             // move the preferred name to the front
             names.removeAll { $0 == preferred.formattedName }
             names.insert(preferred.formattedName, at: 0)
         }
-        description = argumentInfo.discussion
-        // TODO: ArgumentInfoV0.isOptional doesn't seem to be accurate
-//        isRequired = argumentInfo.isOptional ? nil : true
-        isHidden = argumentInfo.shouldDisplay ? nil : true
-        repeatCount = argumentInfo.isRepeating ? .infinity : nil
+
         if argumentInfo.kind == .option {
             arguments = [
                 .init(

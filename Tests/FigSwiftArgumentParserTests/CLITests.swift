@@ -21,7 +21,7 @@ struct TestCommand: ParsableCommand {
 final class CLITests: XCTestCase {
 
     func testGeneratePrintsSpec() throws {
-        let spec = try TestCommand.generateFigSpec()
+        let spec = try TestCommand.dumpFigSpec()
         XCTAssertThrowsError(try TestCommand.parseAsRoot(["--generate-fig-spec"])) { error in
             let exitCode = TestCommand.exitCode(for: error)
             XCTAssertEqual(exitCode, .success, "Received a non-success exit code: \(exitCode)")

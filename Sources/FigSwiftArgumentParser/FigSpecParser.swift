@@ -80,12 +80,14 @@ extension FigSpec.Argument {
 
 extension FigSpec.Option {
     init(argumentInfo: ArgumentInfoV0) throws {
+        let formattedNames = (argumentInfo.names ?? []).map(\.formattedName)
+        let isHelp = formattedNames.contains("--help")
+
         self.init(
-            names: (argumentInfo.names ?? []).map(\.formattedName),
-            // TODO: ArgumentInfoV0.isOptional doesn't seem to be accurate
-//            isRequired: argumentInfo.isOptional ? nil : true,
+            names: formattedNames,
+            isRequired: isHelp || argumentInfo.isOptional ? nil : true,
             repeatCount: argumentInfo.isRepeating ? .infinity : nil,
-            description: argumentInfo.discussion,
+            description: argumentInfo.abstract,
             isHidden: argumentInfo.shouldDisplay ? nil : true
         )
 

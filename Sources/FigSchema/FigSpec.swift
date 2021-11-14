@@ -90,11 +90,19 @@ public struct FigSpec: Encodable {
         case preset(Preset, Overlay?)
         case template(Overlay)
 
+        public static func path(_ url: URL) -> Icon {
+            .path(url, nil)
+        }
+
+        public static func preset(_ preset: Preset) -> Icon {
+            .preset(preset, nil)
+        }
+
         private func buildFigURL(_ builder: (inout URLComponents) throws -> Void) rethrows -> String? {
             var components = URLComponents()
             components.scheme = "fig"
             try builder(&components)
-            return components.url?.absoluteString
+            return components.string
         }
 
         public var rawValue: String? {
@@ -108,13 +116,13 @@ public struct FigSpec: Encodable {
                 }
             case let .preset(preset, overlay):
                 return buildFigURL { components in
-                    components.path = "icon"
+                    components.host = "icon"
                     components.queryItems = [URLQueryItem(name: "type", value: preset.rawValue)]
                     overlay?.apply(to: &components)
                 }
             case let .template(overlay):
                 return buildFigURL { components in
-                    components.path = "template"
+                    components.host = "template"
                     overlay.apply(to: &components)
                 }
             }

@@ -21,12 +21,12 @@ struct TestCommand: ParsableCommand {
 final class CommandTests: XCTestCase {
 
     func testGeneratePrintsSpec() throws {
-        let spec = try TestCommand.dumpFigSpec()
+        let spec = try TestCommand.figScript()
         XCTAssertThrowsError(try TestCommand.parseAsRoot(["--generate-fig-spec"])) { error in
             let exitCode = TestCommand.exitCode(for: error)
             XCTAssertEqual(exitCode, .success, "Received a non-success exit code: \(exitCode)")
             let fullMessage = TestCommand.fullMessage(for: error)
-            XCTAssertEqual(fullMessage, spec, "--generate-fig-spec should print exactly the value of generateFigSpec()")
+            XCTAssertEqual(fullMessage, spec, "--generate-fig-spec should print exactly the value of figScript()")
         }
     }
 

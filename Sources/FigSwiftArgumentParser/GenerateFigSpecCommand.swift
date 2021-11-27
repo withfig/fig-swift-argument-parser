@@ -1,5 +1,5 @@
-import Foundation
 import ArgumentParser
+import Foundation
 
 /// A type used to add the `--generate-fig-spec` flag to your command.
 ///
@@ -19,12 +19,8 @@ import ArgumentParser
 /// `ParsableArguments.figSpec()` or `ParsableArguments.figScript()`
 /// respectively.
 public struct GenerateFigSpec<Root: ParsableArguments>: ParsableArguments {
-    @Flag(
-        help: .init(
-            "Generate a Fig autocomplete specification",
-            shouldDisplay: false
-        )
-    ) var generateFigSpec = false
+    @Flag(help: ArgumentHelp("Generate a Fig autocomplete specification", shouldDisplay: false))
+    var generateFigSpec = false
 
     public init() {}
 

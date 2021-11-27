@@ -1,6 +1,6 @@
-import XCTest
 import ArgumentParser
 @testable import FigSwiftArgumentParser
+import XCTest
 
 struct TestSubcommand: ParsableCommand {}
 
@@ -19,7 +19,6 @@ struct TestCommand: ParsableCommand {
 }
 
 final class CommandTests: XCTestCase {
-
     func testGeneratePrintsSpec() throws {
         let spec = try TestCommand.figScript()
         XCTAssertThrowsError(try TestCommand.parseAsRoot(["--generate-fig-spec"])) { error in
@@ -45,5 +44,4 @@ final class CommandTests: XCTestCase {
         let parsed = try TestCommand.parseAsRoot(["test-subcommand"])
         _ = try XCTUnwrap(parsed as? TestSubcommand, "Expected subcommand")
     }
-
 }

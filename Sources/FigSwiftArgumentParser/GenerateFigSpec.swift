@@ -1,16 +1,15 @@
-import Foundation
-import FigSchema
 import ArgumentParser
+import FigSchema
+import Foundation
 
-extension ParsableArguments {
-
+public extension ParsableArguments {
     /// Generates a `FigSpec` for the caller.
     ///
     /// To add a `--generate-fig-spec` flag to your command,
     /// use ``GenerateFigSpec``.
     ///
     /// - Returns: The generated `FigSpec`.
-    public static func figSpec() throws -> FigSpec {
+    static func figSpec() throws -> FigSpec {
         try FigSpecParser().parse(data: Data(_dumpHelp().utf8))
     }
 
@@ -21,8 +20,7 @@ extension ParsableArguments {
     /// use ``GenerateFigSpec``.
     ///
     /// - Returns: The generated completion script.
-    public static func figScript() throws -> String {
+    static func figScript() throws -> String {
         try figSpec().script()
     }
-
 }

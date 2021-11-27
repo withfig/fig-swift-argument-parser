@@ -3,5 +3,6 @@ public struct ErrorMessage: Error, CustomStringConvertible {
     public init(_ message: String) {
         self.message = message
     }
+
     public var description: String { message }
 }

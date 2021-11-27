@@ -1,5 +1,5 @@
-import Foundation
 import FigUtils
+import Foundation
 
 public struct FigSpec: Encodable {
     public enum Template: String, Encodable {
@@ -25,9 +25,11 @@ public struct FigSpec: Encodable {
             public init(rawValue: String) {
                 self.rawValue = rawValue
             }
+
             public init(stringLiteral value: String) {
-                self.rawValue = value
+                rawValue = value
             }
+
             public static let alert: Preset = "alert"
             public static let android: Preset = "android"
             public static let apple: Preset = "apple"
@@ -107,7 +109,7 @@ public struct FigSpec: Encodable {
 
         public var rawValue: String? {
             switch self {
-            case .character(let c):
+            case let .character(c):
                 return "\(c)"
             case let .path(url, overlay):
                 return buildFigURL { components in
@@ -144,10 +146,12 @@ public struct FigSpec: Encodable {
             init(value: UInt?) {
                 self.value = value
             }
+
             public static let infinity = RepeatCount(value: nil)
             public init(integerLiteral value: UInt) {
                 self.value = value
             }
+
             public func encode(to encoder: Encoder) throws {
                 var container = encoder.singleValueContainer()
                 if let value = value {
@@ -158,12 +162,12 @@ public struct FigSpec: Encodable {
             }
         }
 
-        public var names: [String]
-        public var arguments: [Argument]?
+        public var name: [String]
+        public var args: [Argument]?
         public var isPersistent: Bool?
         public var isRequired: Bool?
         public var requiresEquals: Bool?
-        public var repeatCount: RepeatCount?
+        public var isRepeatable: RepeatCount?
         public var exclusiveOn: [String]?
         public var dependsOn: [String]?
 
@@ -174,16 +178,16 @@ public struct FigSpec: Encodable {
 
         public var priority: Double?
         public var isDangerous: Bool?
-        public var isHidden: Bool?
-        public var isDeprecated: Bool?
+        public var hidden: Bool?
+        public var deprecated: Bool?
 
         public init(
-            names: [String],
-            arguments: [FigSpec.Argument]? = nil,
+            name: [String],
+            args: [FigSpec.Argument]? = nil,
             isPersistent: Bool? = nil,
             isRequired: Bool? = nil,
             requiresEquals: Bool? = nil,
-            repeatCount: FigSpec.Option.RepeatCount? = nil,
+            isRepeatable: RepeatCount? = nil,
             exclusiveOn: [String]? = nil,
             dependsOn: [String]? = nil,
             displayName: String? = nil,
@@ -192,15 +196,15 @@ public struct FigSpec: Encodable {
             icon: FigSpec.Icon? = nil,
             priority: Double? = nil,
             isDangerous: Bool? = nil,
-            isHidden: Bool? = nil,
-            isDeprecated: Bool? = nil
+            hidden: Bool? = nil,
+            deprecated: Bool? = nil
         ) {
-            self.names = names
-            self.arguments = arguments
+            self.name = name
+            self.args = args
             self.isPersistent = isPersistent
             self.isRequired = isRequired
             self.requiresEquals = requiresEquals
-            self.repeatCount = repeatCount
+            self.isRepeatable = isRepeatable
             self.exclusiveOn = exclusiveOn
             self.dependsOn = dependsOn
             self.displayName = displayName
@@ -209,29 +213,8 @@ public struct FigSpec: Encodable {
             self.icon = icon
             self.priority = priority
             self.isDangerous = isDangerous
-            self.isHidden = isHidden
-            self.isDeprecated = isDeprecated
-        }
-
-        private enum CodingKeys: String, CodingKey {
-            case names = "name"
-            case arguments = "args"
-            case isPersistent
-            case isRequired
-            case requiresEquals
-            case repeatCount = "isRepeatable"
-            case exclusiveOn
-            case dependsOn
-
-            case displayName
-            case insertValue
-            case description
-            case icon
-
-            case priority
-            case isDangerous
-            case isHidden = "hidden"
-            case isDeprecated = "deprecated"
+            self.hidden = hidden
+            self.deprecated = deprecated
         }
     }
 
@@ -243,7 +226,7 @@ public struct FigSpec: Encodable {
 
         public var name: String?
         public var description: String?
-        public var templates: [Template]?
+        public var template: [Template]?
         public var `default`: String?
         public var parserDirectives: ParserDirectives?
 
@@ -258,9 +241,9 @@ public struct FigSpec: Encodable {
         public init(
             name: String? = nil,
             description: String? = nil,
-            templates: [FigSpec.Template]? = nil,
+            template: [FigSpec.Template]? = nil,
             default: String? = nil,
-            parserDirectives: FigSpec.Argument.ParserDirectives? = nil,
+            parserDirectives: ParserDirectives? = nil,
             isDangerous: Bool? = nil,
             isVariadic: Bool? = nil,
             optionsCanBreakVariadicArg: Bool? = nil,
@@ -271,7 +254,7 @@ public struct FigSpec: Encodable {
         ) {
             self.name = name
             self.description = description
-            self.templates = templates
+            self.template = template
             self.default = `default`
             self.parserDirectives = parserDirectives
             self.isDangerous = isDangerous
@@ -282,22 +265,6 @@ public struct FigSpec: Encodable {
             self.isScript = isScript
             self.debounce = debounce
         }
-
-        private enum CodingKeys: String, CodingKey {
-            case name
-            case description
-            case templates = "template"
-            case `default`
-            case parserDirectives
-
-            case isDangerous
-            case isVariadic
-            case optionsCanBreakVariadicArg
-            case isOptional
-            case isCommand
-            case isScript
-            case debounce
-        }
     }
 
     public struct Subcommand: Encodable {
@@ -305,10 +272,10 @@ public struct FigSpec: Encodable {
             public var flagsArePosixNoncompliant: Bool?
         }
 
-        public var names: [String]
+        public var name: [String]
         public var subcommands: [Subcommand]?
         public var options: [Option]?
-        public var arguments: [Argument]?
+        public var args: [Argument]?
         public var parserDirectives: ParserDirectives?
 
         public var displayName: String?
@@ -318,28 +285,28 @@ public struct FigSpec: Encodable {
 
         public var priority: Double?
         public var isDangerous: Bool?
-        public var isHidden: Bool?
-        public var isDeprecated: Bool?
+        public var hidden: Bool?
+        public var deprecated: Bool?
 
         public init(
-            names: [String],
+            name: [String],
             subcommands: [FigSpec.Subcommand]? = nil,
             options: [FigSpec.Option]? = nil,
-            arguments: [FigSpec.Argument]? = nil,
-            parserDirectives: FigSpec.Subcommand.ParserDirectives? = nil,
+            args: [FigSpec.Argument]? = nil,
+            parserDirectives: ParserDirectives? = nil,
             displayName: String? = nil,
             insertValue: String? = nil,
             description: String? = nil,
             icon: FigSpec.Icon? = nil,
             priority: Double? = nil,
             isDangerous: Bool? = nil,
-            isHidden: Bool? = nil,
-            isDeprecated: Bool? = nil
+            hidden: Bool? = nil,
+            deprecated: Bool? = nil
         ) {
-            self.names = names
+            self.name = name
             self.subcommands = subcommands
             self.options = options
-            self.arguments = arguments
+            self.args = args
             self.parserDirectives = parserDirectives
             self.displayName = displayName
             self.insertValue = insertValue
@@ -347,26 +314,8 @@ public struct FigSpec: Encodable {
             self.icon = icon
             self.priority = priority
             self.isDangerous = isDangerous
-            self.isHidden = isHidden
-            self.isDeprecated = isDeprecated
-        }
-
-        private enum CodingKeys: String, CodingKey {
-            case names = "name"
-            case subcommands
-            case options
-            case arguments = "args"
-            case parserDirectives
-
-            case displayName
-            case insertValue
-            case description
-            case icon
-
-            case priority
-            case isDangerous
-            case isHidden = "hidden"
-            case isDeprecated = "deprecated"
+            self.hidden = hidden
+            self.deprecated = deprecated
         }
     }
 

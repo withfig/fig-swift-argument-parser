@@ -1,9 +1,9 @@
-import Foundation
-import FigUtils
-import FigSchema
 import ArgumentParserToolInfo
+import FigSchema
+import FigUtils
+import Foundation
 
-fileprivate extension Collection {
+private extension Collection {
     var nonEmpty: Self? { isEmpty ? nil : self }
 }
 
@@ -39,25 +39,23 @@ private extension ArgumentInfoV0.NameInfoV0 {
     }
 }
 
-extension FigSpec {
+public extension FigSpec {
     init(toolInfo: ToolInfoV0) throws {
-        self.init(
-            root: try .init(commandInfo: toolInfo.command)
-        )
+        self.init(root: try FigSpec.Subcommand(commandInfo: toolInfo.command))
     }
 }
 
-extension FigSpec.Subcommand {
+public extension FigSpec.Subcommand {
     init(commandInfo: CommandInfoV0) throws {
         self.init(
-            names: [commandInfo.commandName],
+            name: [commandInfo.commandName],
             subcommands: try commandInfo.subcommands?
                 .map(FigSpec.Subcommand.init(commandInfo:)),
             options: try commandInfo.arguments?
                 .filter { $0.kind != .positional }
                 .nonEmpty?
                 .map(FigSpec.Option.init(argumentInfo:)),
-            arguments: try commandInfo.arguments?
+            args: try commandInfo.arguments?
                 .filter { $0.kind == .positional }
                 .nonEmpty?
                 .map(FigSpec.Argument.init(argumentInfo:)),
@@ -84,25 +82,25 @@ extension FigSpec.Option {
         let isHelp = formattedNames.contains("--help")
 
         self.init(
-            names: formattedNames,
+            name: formattedNames,
             isRequired: isHelp || argumentInfo.isOptional ? nil : true,
-            repeatCount: argumentInfo.isRepeating ? .infinity : nil,
+            isRepeatable: argumentInfo.isRepeating ? .infinity : nil,
             description: argumentInfo.abstract,
-            isHidden: argumentInfo.shouldDisplay ? nil : true
+            hidden: argumentInfo.shouldDisplay ? nil : true
         )
 
         if let preferred = argumentInfo.preferredName {
             // move the preferred name to the front
-            names.removeAll { $0 == preferred.formattedName }
-            names.insert(preferred.formattedName, at: 0)
+            name.removeAll { $0 == preferred.formattedName }
+            name.insert(preferred.formattedName, at: 0)
         }
 
         if argumentInfo.kind == .option {
-            arguments = [
-                .init(
+            args = [
+                FigSpec.Argument(
                     name: argumentInfo.valueName,
                     default: argumentInfo.defaultValue
-                )
+                ),
             ]
         }
     }

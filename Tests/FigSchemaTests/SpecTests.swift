@@ -1,8 +1,7 @@
-import XCTest
 @testable import FigSchema
+import XCTest
 
 final class SpecTests: XCTestCase {
-
     func testIcons() throws {
         func check(_ icon: FigSpec.Icon, _ expected: String, file: StaticString = #file, line: UInt = #line) {
             XCTAssertEqual(icon.rawValue, expected, file: file, line: line)
@@ -18,5 +17,4 @@ final class SpecTests: XCTestCase {
     }
 
     // TODO: Add more tests
-
 }
